@@ -1,8 +1,22 @@
+/* ======================================================
+   style.css — unified background + message/mobile fixes
+   - single gradient on <html,body> so color never shifts
+   - remove local gradients/opaque overlays that caused tone change
+   - message text: readable, left-aligned on mobile and fits
+   - moments cards remain large on mobile
+   ====================================================== */
+
+/* Reset / base */
 html, body {
   margin: 0;
   padding: 0;
   height: 100%;
+  /* Global page background: single source of truth */
+  background: radial-gradient(circle at top, #b1125b, #b1125b);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
+
 * {
   margin: 0;
   padding: 0;
@@ -11,44 +25,45 @@ html, body {
 
 body {
   font-family: 'Poppins', sans-serif;
+  color: #fff5dc; /* default page text color (light on pink) */
 }
 
-/* Background */
+/* .pink-bg becomes a transparent container so the global gradient shows consistently */
 .pink-bg {
-  background: radial-gradient(circle at top, #ff5fa2, #b1125b);
+  background: transparent;
   min-height: 100vh;
-  color: #fff5dc;
-  text-align: center;
+  text-align: center; /* center headings by default */
   overflow-x: hidden;
+  position: relative;
 }
 
-/* Hero */
-/* FULL SCREEN HERO */
+/* --------------------------
+   HERO
+   -------------------------- */
 .hero {
   position: relative;
   width: 100%;
   height: 100vh;
-  background: radial-gradient(circle at top, #ff5fa2, #b1125b);
   display: flex;
   align-items: center;
-  justify-content: flex-start; /* IMAGE TO LEFT */
+  justify-content: flex-start;
   overflow: hidden;
-  padding-left: 3vw;
+  padding-left: 3vw; /* kept for wide screens */
+  gap: 2vw;
 }
 
-
-
-/* IMAGE FULL SCREEN */
+/* Image */
 .hero-img {
   height: 100%;
-  max-width: 70vw;       /* LEAVES PINK SPACE */
+  max-width: 70vw;
   object-fit: contain;
   display: block;
+  border-radius: 12px;
+  flex-shrink: 0;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.18);
 }
 
-
-
-/* BUTTON OVER IMAGE */
+/* Continue CTA (desktop) */
 .continue-btn {
   position: absolute;
   right: 5%;
@@ -60,11 +75,11 @@ body {
   font-size: 18px;
   cursor: pointer;
   z-index: 10;
+  color: #1a1a1a;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.16);
 }
 
-
-
-/* Buttons */
+/* Buttons (shared) */
 .btn {
   background: #ffd966;
   border: none;
@@ -73,51 +88,38 @@ body {
   font-size: 18px;
   cursor: pointer;
   margin-top: 30px;
+  margin-bottom: 30px;
   position: relative;
+  color: #1a1a1a;
 }
 
 /* Bounce */
-.bounce:hover {
-  animation: bounce 0.6s;
-}
-
-@keyframes bounce {
-  0% { transform: translateY(0); }
-  50% { transform: translateY(-8px); }
-  100% { transform: translateY(0); }
-}
+.bounce:hover { animation: bounce 0.6s; }
+@keyframes bounce { 0%{transform:translateY(0)}50%{transform:translateY(-8px)}100%{transform:translateY(0)} }
 
 /* Shine */
-.shine {
-  overflow: hidden;
-}
-
+.shine { overflow: hidden; position: relative; }
 .shine::after {
   content: '';
   position: absolute;
-  top: 0;
-  left: -80%;
-  width: 50%;
-  height: 100%;
+  top: 0; left: -80%;
+  width: 50%; height: 100%;
   background: rgba(255,255,255,0.5);
   transform: skewX(-20deg);
+  pointer-events: none;
+  z-index: 12;
 }
-
-.shine:hover::after {
-  animation: shine 0.9s;
-}
-
-@keyframes shine {
-  100% { left: 130%; }
-}
+.shine:hover::after { animation: shine 0.9s forwards; }
+@keyframes shine { 100% { left: 130%; } }
 
 /* Titles */
 .title {
   margin: 40px 20px;
   font-size: 36px;
+  color: #fff5dc;
 }
 
-/* Grid */
+/* Grid & cards */
 .grid {
   display: flex;
   gap: 25px;
@@ -129,8 +131,8 @@ body {
 .card {
   width: 220px;
   height: 300px;
-  background: rgba(255,255,255,0.15);
-  border: 2px solid #ffd966;
+  background: rgba(255,255,255,0.06); /* subtle so base gradient is visible */
+  border: 2px solid rgba(255,217,102,0.9);
   border-radius: 22px;
   cursor: pointer;
   position: relative;
@@ -138,6 +140,7 @@ body {
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  transition: transform .14s ease, box-shadow .14s ease;
 }
 
 .card img {
@@ -153,32 +156,31 @@ body {
   font-size: 42px;
   animation: floatCam 2.5s infinite ease-in-out;
 }
+@keyframes floatCam { 0%{transform:translateY(0)}50%{transform:translateY(-12px)}100%{transform:translateY(0)} }
 
-@keyframes floatCam {
-  0% { transform: translateY(0); }
-  50% { transform: translateY(-12px); }
-  100% { transform: translateY(0); }
-}
-
-/* Message box */
+/* Message box
+   - make transparent so gradient remains visually consistent
+   - text color uses the page light color for contrast
+*/
 .message-box {
-  max-width: 620px;
-  margin: 80px auto;
-  background: rgba(255,255,255,0.18);
-  padding: 45px;
-  border-radius: 30px;
+  max-width: 720px;
+  margin: 60px auto;
+  background: transparent;      /* keep gradient visible */
+  padding: 28px 20px;
+  border-radius: 18px;
+  color: #fff5dc;               /* light text on pink */
+  line-height: 1.6;
+  text-align: left;             /* better readability for paragraphs */
+  font-size: 16px;
 }
 
-/* Floating emojis */
+/* Floating emojis - keep above gradient but under CTAs where needed */
 .floating-container {
   position: fixed;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  inset: 0;
   pointer-events: none;
   overflow: hidden;
-  z-index: 1;
+  z-index: 10;
 }
 
 .floating-emoji {
@@ -188,14 +190,100 @@ body {
   animation-name: floatUp;
   animation-timing-function: linear;
 }
+@keyframes floatUp { from{transform:translateY(0);opacity:0.9} to{transform:translateY(-120vh);opacity:0} }
 
-@keyframes floatUp {
-  from {
-    transform: translateY(0);
-    opacity: 0.9;
+/* ======================================================
+   RESPONSIVE ADJUSTMENTS (INDEX + MOMENTS + MESSAGE)
+   ====================================================== */
+
+@media (max-width: 1024px) {
+  .hero-img { max-width: 60vw; }
+  .title { font-size: 32px; }
+}
+
+/* MOBILE: unify visuals, make hero fit + message readable */
+@media (max-width: 768px) {
+
+  /* HERO: remove left gap and center */
+  .hero {
+    padding-left: 0;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: auto;
+    min-height: 100vh;
+    padding: 18px 16px;
+    gap: 12px;
   }
-  to {
-    transform: translateY(-120vh);
-    opacity: 0;
+
+  /* HERO IMAGE: full width but reserve space so the CTA is visible */
+  .hero-img {
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+    object-fit: cover;                 /* remove image-built padding visually */
+    max-height: calc(100vh - 140px);   /* reserve room for the CTA */
+    margin-bottom: 12px;
   }
+
+  .continue-btn {
+    position: static;
+    margin-top: 12px;
+    padding: 12px 28px;
+    font-size: 16px;
+    z-index: 30;
+  }
+
+  /* MOMENTS: large, readable cards */
+  .title {
+    font-size: 28px;
+    margin: 18px 8px;
+    color: #fff5dc;
+  }
+
+  .grid {
+    gap: 16px;
+    padding: 12px;
+  }
+
+  .card {
+    width: 90vw;
+    height: 360px;
+    border-radius: 20px;
+    background: rgba(255,255,255,0.05);
+  }
+
+  .card p { font-size: 16px; color: #fff5dc; }
+
+  .camera { font-size: 48px; }
+
+  .btn {
+    font-size: 18px;
+    padding: 12px 30px;
+    margin-top: 18px;
+  }
+
+  /* MESSAGE: make paragraph readable, left aligned, no overlay color change */
+  .message-box {
+    margin: 22px auto;
+    padding: 18px 16px;
+    max-width: 94%;
+    font-size: 16px;
+    line-height: 1.6;
+    text-align: left;
+    background: transparent;
+    color: #fff5dc; /* ensure readable on gradient */
+  }
+
+  /* ensure emoji layer doesn't cover the CTA */
+  .floating-container { z-index: 10; }
+}
+
+/* Extra small phones */
+@media (max-width: 420px) {
+  .card { width: 94vw; height: 400px; }
+  .title { font-size: 22px; }
+  .message-box { font-size: 15px; padding: 14px 12px; margin: 18px auto; }
+  .hero-img { max-height: calc(100vh - 140px); }
+  .camera { font-size: 52px; }
 }
